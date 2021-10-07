@@ -4,16 +4,21 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "@types/node": "^16.10.3",
     "apollo-datasource": "^3.1.0",
     "apollo-server": "^3.3.0",
     "dotenv": "^10.0.0",
-    "graphql": "^15.6.1"
+    "graphql": "^15.6.1",
+    "nodemon": "^2.0.13",
+    "ts-jest": "^27.0.5",
+    "ts-node": "^10.2.1"
   },
   "devDependencies": {
     "typescript": "^4.4.3"
   },
   "scripts": {
     "build": "tsc",
+    "ts-node": "ts-node src/start.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

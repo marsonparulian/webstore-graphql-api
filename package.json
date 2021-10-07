@@ -14,12 +14,16 @@
     "ts-node": "^10.2.1"
   },
   "devDependencies": {
+    "@types/jest": "^27.0.2",
+    "jest": "^27.2.4",
     "typescript": "^4.4.3"
   },
   "scripts": {
     "build": "tsc",
     "ts-node": "ts-node src/start.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:clearCache": "jest --clearCache"
   },
   "repository": {
     "type": "git",

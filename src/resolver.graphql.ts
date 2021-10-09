@@ -1,11 +1,8 @@
 // Graphql resolver 
 const resolver = {
     Query: {
-        products: async () => {
-            const producst = [
-                { name: "Ultra Milk", description: "Ultra Milk description " }
-            ];
-            return producst;
+        products: async (_: never, __: never, context: any) => {
+            return context.dataSources.products.getProducts();
         },
     },
 };

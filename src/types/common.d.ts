@@ -10,3 +10,10 @@ export interface IProduct {
  * The use of pure interface, e.g. `IProduct`,  in mongoose model will throw type checking error.
  */
 export type ProductDocument = IProduct & Document;
+/**
+ * `context` in resolver & `MongoDataSource`
+ */
+export interface IContext {
+    // Only used in resolvers
+    dataSources: any;
+}

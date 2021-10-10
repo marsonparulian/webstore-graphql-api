@@ -13,6 +13,7 @@ query getProducts($keyword: String){
         keyword: $keyword
         ){
         name
+        description
     }
 }
 `;
@@ -56,6 +57,7 @@ describe("query getProducts", () => {
             expect(fetchedProducts).toEqual(expect.arrayContaining([
                 expect.objectContaining({
                     name: savedProduct.name,
+                    description: savedProduct.description,
                 })
             ]));
         });
@@ -89,6 +91,7 @@ describe("query getProducts", () => {
             expect(queried).toEqual(expect.arrayContaining([
                 expect.objectContaining({
                     name: p.name,
+                    description: p.description,
                 })
             ]))
         });

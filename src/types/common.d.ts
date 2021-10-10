@@ -11,6 +11,12 @@ export interface IProduct {
  */
 export type ProductDocument = IProduct & Document;
 /**
+ * Parameters to query products
+ */
+export interface IProductParams {
+    keyword?: string;
+}
+/**
  * `context` in resolver & `MongoDataSource`
  */
 export interface IContext {

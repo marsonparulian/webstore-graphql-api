@@ -1,9 +1,9 @@
 import { MongoDataSource } from "apollo-datasource-mongodb";
-import { IContext, IProduct, ProductDocument } from "../types/common";
+import { IContext, IProduct, IProductParams, ProductDocument } from "../types/common";
 import { Model, FilterQuery } from "mongoose";
 
 class Product extends MongoDataSource<ProductDocument, IContext> {
-    async getProducts(params: any): Promise<IProduct[]> {
+    async getProducts(params: IProductParams): Promise<IProduct[]> {
         // Construct filter
         let filter: FilterQuery<ProductDocument> = {};
         // Include `keyword`

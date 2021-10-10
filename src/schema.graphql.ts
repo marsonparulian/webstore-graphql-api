@@ -8,6 +8,6 @@ type Product {
 
 
 type Query {
-    products: [Product]
+    products (keyword:String): [Product]
 }
 `;

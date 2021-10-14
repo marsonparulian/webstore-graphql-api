@@ -15,6 +15,8 @@ export type ProductDocument = IProduct & Document;
  */
 export interface IProductParams {
     keyword?: string;
+    offset?: number;
+    limit?: number;
 }
 /**
  * `context` in resolver & `MongoDataSource`

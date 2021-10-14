@@ -8,9 +8,11 @@ import * as productTestLib from "../../testlibs/products.testlib";
 jest.setTimeout(14000);
 
 const GET_PRODUCTS = gql`
-query getProducts($keyword: String){
+query getProducts($keyword: String, $offset: Int=0, $limit: Int= 12){
     products (
-        keyword: $keyword
+        keyword: $keyword,
+        offset: $offset,
+        limit: $limit
         ){
         name
         description
@@ -97,7 +99,37 @@ describe("query getProducts", () => {
         });
 
 
+    });
+    test("Get products with offset :2 and limit : 3", async () => {
+        // Define params for pagination
+        const offset = 2, limit = 3;
 
+        // Send Operation
+        const { data, errors } = await server.executeOperation({
+            query: GET_PRODUCTS,
+            variables: {
+                offset,
+                limit,
+            },
+        })
+
+        // Assert response contains no `errors`
+        expect(errors).toBeFalsy();
+
+        // The data should be truthy
+        expect(data).toBeTruthy();
+
+        // Assert response contain the correct `limit`
+        expect(data?.products).toEqual(expect.any(Array));
+        expect(data?.products?.length).toBe(limit);
+
+        // Assert response  has the exact item (`offset` is applied correctly).
+        const expectedProducts = productsData.slice(offset, offset + limit);
+        // Iterate through the expected paginated products
+        expectedProducts.forEach((p, index) => {
+            // Assert the expected product included in the queried products at the same index
+            expect(data?.products[index]).toEqual(expect.objectContaining(p))
+        });
     });
     afterAll(async () => {
         // Close DB connection

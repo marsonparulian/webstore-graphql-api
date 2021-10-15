@@ -9,13 +9,16 @@ jest.setTimeout(14000);
 
 const GET_PRODUCTS = gql`
 query getProducts($keyword: String, $offset: Int=0, $limit: Int= 12){
-    products (
+    paginatedProducts (
         keyword: $keyword,
         offset: $offset,
         limit: $limit
         ){
-        name
-        description
+        totalProducts
+        products{
+            name
+            description
+        }
     }
 }
 `;
@@ -46,7 +49,10 @@ describe("query getProducts", () => {
         };
 
         // The fetched products
-        const fetchedProducts = response?.data?.products;
+        const fetchedProducts = response?.data?.paginatedProducts?.products;
+
+        // Assert `totalProducts`
+        expect(response?.data?.paginatedProducts?.totalProducts).toBe(productsData.length);
 
         // Assert response should contain array of product
         expect(fetchedProducts).toEqual(expect.any(Array));
@@ -78,10 +84,12 @@ describe("query getProducts", () => {
             }
         })
         // The queried `products`
-        const queried = response?.data?.products;
+        const queried = response?.data?.paginatedProducts?.products;
 
         // Assert the dbFetched products is an array 
         expect(fetched).toEqual(expect.any(Array));
+        // Assert `totalProducts` : should have the same number with 'fetched' products
+        expect(response?.data?.paginatedProducts?.totalProducts).toBe(fetched.length);
         // Assert the queried products is an array
         expect(queried).toEqual(expect.any(Array));
         // Assert both product array has same number of elements.
@@ -119,16 +127,20 @@ describe("query getProducts", () => {
         // The data should be truthy
         expect(data).toBeTruthy();
 
+        // Extract results
+        const paginatedProducts = data?.paginatedProducts;
+        const products = data?.paginatedProducts?.products;
+
         // Assert response contain the correct `limit`
-        expect(data?.products).toEqual(expect.any(Array));
-        expect(data?.products?.length).toBe(limit);
+        expect(products).toEqual(expect.any(Array));
+        expect(products?.length).toBe(limit);
 
         // Assert response  has the exact item (`offset` is applied correctly).
         const expectedProducts = productsData.slice(offset, offset + limit);
         // Iterate through the expected paginated products
         expectedProducts.forEach((p, index) => {
             // Assert the expected product included in the queried products at the same index
-            expect(data?.products[index]).toEqual(expect.objectContaining(p))
+            expect(products[index]).toEqual(expect.objectContaining(p))
         });
     });
     afterAll(async () => {

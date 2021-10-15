@@ -5,9 +5,12 @@ type Product {
     name: String
     description: String
 }
-
+type PaginatedProducts{
+    totalProducts: Int
+    products: [Product]
+}
 
 type Query {
-    products (keyword:String, offset:Int, limit: Int): [Product]
+    paginatedProducts (keyword:String, offset:Int, limit: Int): PaginatedProducts
 }
 `;

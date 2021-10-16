@@ -4,7 +4,10 @@ import { IContext } from "../types/common";
 
 class Users extends MongoDataSource<UserDocument, IContext>{
     async register(registerInput: RegisterInput) {
-        return registerInput;
+        const user = new this.model(registerInput);
+        await user.save();
+
+        return user;
     }
 }
 

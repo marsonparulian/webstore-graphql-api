@@ -42,6 +42,12 @@ describe("Mutation register", () => {
         ));
 
         // Assert the user saved in DB
+        const fetchedUser = await userModel.findOne({ email: user.email });
+        expect(fetchedUser).toBeTruthy();
+        expect(fetchedUser).toEqual(expect.objectContaining({
+            name: user.name,
+            email: user.email,
+        }));
     });
     afterAll(async () => {
         // Disconnect DB

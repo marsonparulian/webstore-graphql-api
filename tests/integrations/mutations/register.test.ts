@@ -41,13 +41,20 @@ describe("Mutation register", () => {
             reduceRegisterInputToUser(user)
         ));
 
-        // Assert the user saved in DB
+        // Directly fetch to DB
         const fetchedUser = await userModel.findOne({ email: user.email });
+
+        // Assert the user saved in DB
         expect(fetchedUser).toBeTruthy();
         expect(fetchedUser).toEqual(expect.objectContaining({
             name: user.name,
             email: user.email,
         }));
+
+        // Assert the saved `user.password` is no longer the same as result of password hashing
+        console.log("saved password", fetchedUser?.password);
+        expect(fetchedUser?.password).toBeTruthy();
+        expect(fetchedUser?.password).not.toBe(user.password);
     });
     afterAll(async () => {
         // Disconnect DB

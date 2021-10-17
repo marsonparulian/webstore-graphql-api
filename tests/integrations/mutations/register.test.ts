@@ -52,7 +52,6 @@ describe("Mutation register", () => {
         }));
 
         // Assert the saved `user.password` is no longer the same as result of password hashing
-        console.log("saved password", fetchedUser?.password);
         expect(fetchedUser?.password).toBeTruthy();
         expect(fetchedUser?.password).not.toBe(user.password);
     });

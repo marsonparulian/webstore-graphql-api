@@ -32,8 +32,8 @@ class Users extends MongoDataSource<UserDocument, IContext>{
         const isPasswordAMatch = bcrypt.compare(loginInput.password, userDoc.password);
         if (!isPasswordAMatch) throw new Error("Incorrect password");
 
-        // Generate jwt token
-        const secret = "HashBrownies";
+        // Generate jwt token   
+        const secret = process.env.A_TOKEN_SECRET ?? "";
         const user = authHelper.reduceUserDocumentToUser(userDoc);
         const token = jsonWebToken.sign(user, secret, { expiresIn: "2h" });
 

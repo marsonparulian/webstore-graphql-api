@@ -14,3 +14,12 @@ export interface IUser {
 }
 /** User document saved in DB */
 export type UserDocument = IUser & Document & { password: string };
+
+/** login form input */
+export interface LoginInput {
+    email: string!;
+    password: string!;
+}
+export type UserSession = IUser & {
+    token: string;
+}

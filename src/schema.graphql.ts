@@ -18,11 +18,21 @@ input RegisterInput {
     email: String
     password: String
 }
+input LoginInput {
+    email: String
+    password: String
+}
+type UserSession {
+    name: String!
+    email: String!
+    token: String!
+}
 
 type Query {
     paginatedProducts (keyword:String, offset:Int, limit: Int): PaginatedProducts
 }
 type Mutation {
     register(registerInput: RegisterInput): User 
+    login(loginInput : LoginInput) :UserSession
 }
 `;

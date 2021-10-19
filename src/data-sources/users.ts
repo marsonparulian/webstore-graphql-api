@@ -1,7 +1,9 @@
 import { MongoDataSource } from "apollo-datasource-mongodb";
 import bcrypt from "bcrypt";
+import jsonWebToken from "jsonwebtoken";
 import { RegisterInput, LoginInput, UserDocument, UserSession } from "../types/auth";
 import { IContext } from "../types/common";
+import * as authHelper from "../hellpers/auth.helper";
 
 class Users extends MongoDataSource<UserDocument, IContext>{
     async register(registerInput: RegisterInput) {
@@ -21,22 +23,24 @@ class Users extends MongoDataSource<UserDocument, IContext>{
      */
     async login(loginInput: LoginInput): Promise<UserSession> {
         // Fetch user from DB
-        const user = await this.model.findOne({ email: loginInput.email }).lean();
+        const userDoc = await this.model.findOne({ email: loginInput.email });
 
         // Does user exist ?
-        if (!user) throw new Error(`User with email ${loginInput.email} is not found`);
+        if (!userDoc) throw new Error(`User with email ${loginInput.email} is not found`);
 
         // verify the password is a match
-        const isPasswordAMatch = bcrypt.compare(loginInput.password, user.password);
+        const isPasswordAMatch = bcrypt.compare(loginInput.password, userDoc.password);
         if (!isPasswordAMatch) throw new Error("Incorrect password");
 
-        // TODO Generate jwt token
-        const token = "TEMP TOKEN";
+        // Generate jwt token
+        const secret = "HashBrownies";
+        const user = authHelper.reduceUserDocumentToUser(userDoc);
+        const token = jsonWebToken.sign(user, secret, { expiresIn: "2h" });
 
         // Return
         return {
-            name: user.name,
-            email: user.email,
+            name: userDoc.name,
+            email: userDoc.email,
             token,
         };
     }

@@ -29,8 +29,6 @@ describe("Mutation login", () => {
         // Receive `response.data.login` for the sent login operation
         const userSession: UserSession = await sendLoginOperation();
 
-        console.log("received user session", userSession);
-
         // Assert `token` is truthy
         expect(userSession.token).toBeTruthy();
         // Assert `userSession` contains basic user info

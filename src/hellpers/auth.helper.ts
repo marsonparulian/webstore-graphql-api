@@ -1,5 +1,5 @@
 // This file contains helper related to authentication / authorization
-import { RegisterInput, IUser, LoginInput } from "../types/auth";
+import { RegisterInput, IUser, LoginInput, UserDocument } from "../types/auth";
 
 /**
  * Reduce `RegisterInput` to `IUser`
@@ -18,4 +18,14 @@ export const reduceRegisterInputToLoginInput = (registerInput: RegisterInput): L
         email: registerInput.email,
         password: registerInput.password,
     };
+}
+/**
+ * Reduce / convert `UserDocument` to `User`
+ */
+export const reduceUserDocumentToUser = (doc: UserDocument): IUser => {
+    const { name, email } = doc;
+    return {
+        name,
+        email,
+    }
 }

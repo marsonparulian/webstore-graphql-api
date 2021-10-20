@@ -4,7 +4,6 @@ import server from "../../../src/server";
 import db from "../../../src/services/db.service";
 import * as userTestLib from "../../testlibs/users.testlib";
 import userModel from "../../../src/models/user.model";
-import { reduceRegisterInputToUser } from "../../../src/hellpers/auth.helper";
 const REGISTER = gql`
     mutation register($registerInput : RegisterInput ) {
         register(registerInput: $registerInput){
@@ -37,9 +36,10 @@ describe("Mutation register", () => {
         expect(response.errors).toBeUndefined();
 
         // Assert the `response.data` will contain the user
-        expect(response?.data?.register).toEqual(expect.objectContaining(
-            reduceRegisterInputToUser(user)
-        ));
+        expect(response?.data?.register).toEqual(expect.objectContaining({
+            name: user.name,
+            email: user.email,
+        }));
 
         // Directly fetch to DB
         const fetchedUser = await userModel.findOne({ email: user.email });

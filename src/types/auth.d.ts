@@ -3,6 +3,7 @@ import { Document } from "mongoose";
 
 /** Public compact version of a user */
 export interface IUser {
+    _id: string;
     name: string;
     email: string;
 }
@@ -11,10 +12,10 @@ interface RegisterSecret {
     password: string;
 }
 /** Data submitted when user register */
-export type RegisterInput = IUser & RegisterSecret;
+export type RegisterInput = Omit<IUser, "_id"> & RegisterSecret;
 
 /** User document saved in DB */
-export type UserDocument = RegisterInput & Document;
+export type UserDocument = RegisterInput & Document & { _id: string; };
 
 /** login form input */
 export interface LoginInput {

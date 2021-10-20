@@ -39,6 +39,7 @@ class Users extends MongoDataSource<UserDocument, IContext>{
 
         // Return
         return {
+            _id: userDoc._id,
             name: userDoc.name,
             email: userDoc.email,
             token,

@@ -1,5 +1,5 @@
 import { MongoDataSource } from "apollo-datasource-mongodb";
-import { IContext, IProduct, IProductParams, ProductDocument } from "../types/common";
+import { IContext, ProductInput, IProductParams, ProductDocument } from "../types/common";
 import { Model, FilterQuery } from "mongoose";
 
 class Product extends MongoDataSource<ProductDocument, IContext> {
@@ -14,7 +14,7 @@ class Product extends MongoDataSource<ProductDocument, IContext> {
 
         return filter;
     }
-    async getProducts(params: IProductParams): Promise<IProduct[]> {
+    async getProducts(params: IProductParams): Promise<ProductInput[]> {
         // Filter query
         const filter = this.createFilterQuery(params);
 

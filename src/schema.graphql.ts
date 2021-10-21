@@ -2,6 +2,7 @@ import { gql } from "apollo-server";
 
 export default gql`
 type Product {
+    id: ID;
     name: String
     description: String
 }
@@ -10,6 +11,7 @@ type PaginatedProducts{
     products: [Product]
 }
 type User {
+    id: ID;
     name: String
     email: String
 }
@@ -23,6 +25,7 @@ input LoginInput {
     password: String
 }
 type UserSession {
+    id: ID;
     name: String!
     email: String!
     token: String!

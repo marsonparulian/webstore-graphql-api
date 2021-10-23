@@ -30,9 +30,19 @@ type UserSession {
     email: String!
     token: String!
 }
+type CartItem {
+    product: Product
+    qty: Int
+}
+type Cart {
+    id: ID
+    userId: ID
+    cartItems: [CartItem]
+}
 
 type Query {
     paginatedProducts (keyword:String, offset:Int, limit: Int): PaginatedProducts
+    cart: Cart
 }
 type Mutation {
     register(registerInput: RegisterInput): User 

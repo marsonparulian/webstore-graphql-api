@@ -22,11 +22,6 @@ describe("Unit test for Cart schema methods", () => {
         let cart: Cart;
         test("Add 1 cart item to empty cart", () => {
             // Init cart
-            // const cart: Cart = {
-            //     _id: "",
-            //     user: "",
-            //     cartItems: [],
-            // };
             const cart = new CartModel();
 
             // Add cart item

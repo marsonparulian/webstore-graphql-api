@@ -1,5 +1,5 @@
 import { Schema, model, Model } from "mongoose";
-import { CartDocument } from "../types/shop";
+import { CartDocument, CartItem } from "../types/shop";
 
 // Schema
 const cartSchema = new Schema({
@@ -19,6 +19,15 @@ const cartSchema = new Schema({
     ],
 });
 
+// Methods
+cartSchema.methods.modifyCartItems = function modifyCartItems(cartItems: CartItem[]): void {
+    // Iterate through `cartItems`
+    cartItems.forEach(ci => {
+        // Append `carItem`
+        this.cartItems.push(ci);
+    });
+
+};
 
 // Model
 const cartModel: Model<CartDocument> = model<CartDocument, Model<CartDocument>>("Cart", cartSchema);

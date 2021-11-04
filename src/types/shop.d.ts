@@ -12,4 +12,6 @@ export interface Cart {
     user: string | IUser;
     cartItems: CartItem[];
 }
-export type CartDocument = Cart & Document;
+export type CartDocument = Cart & Document & {
+    modifyCartItems: (cartItems: CartItem[]) => void
+};

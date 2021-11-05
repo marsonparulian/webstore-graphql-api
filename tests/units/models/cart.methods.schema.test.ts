@@ -4,7 +4,7 @@ import "dotenv/config";
 import CartModel from "../../../src/models/cart.model"
 import ProductModel from "../../../src/models/product.model";
 import { Product, ProductDocument } from "../../../src/types/common";
-import { Cart, CartItem } from "../../../src/types/shop";
+import { CartDocument, Cart, CartItem } from "../../../src/types/shop";
 import * as productsTestlib from "../../testlibs/products.testlib";
 
 describe("Unit test for Cart schema methods", () => {
@@ -39,7 +39,42 @@ describe("Unit test for Cart schema methods", () => {
             expect(insertedCartItem.qty).toBe(cartItem.qty);
 
         });
-        test.todo("Add 3 cart items to empty cart")
+        test("Add 3 cart items to empty cart", async () => {
+            // Init Cart
+            const cart: CartDocument = new CartModel();
+
+            // Init cartItems to be added to cart
+            const cartItems: CartItem[] = [
+                {
+                    product: productsInDb[0]._id.toString(),
+                    qty: 1,
+                }, {
+                    product: productsInDb[1]._id.toString(),
+                    qty: 2,
+                }, {
+                    product: productsInDb[2]._id.toString(),
+                    qty: 3,
+                },
+            ];
+
+            // Add to cart
+            cart.modifyCartItems(cartItems);
+
+            // Assert cart.cartItems has 3 members
+            expect(cart.cartItems.length).toBe(cartItems.length);
+            // Assert each of the added cartItems exist in `cart.cartItemss`
+            cartItems.forEach(ci => {
+                // Is the cartItem found in cart.cartItems ?
+                const isFound = cart.cartItems.find(ci2 => {
+                    return ci.product === ci2.product.toString()
+                        && ci.qty === ci2.qty;
+                });
+                // if not found, throw exception
+                if (!isFound) throw new Error(`Product not found in cart.cartItems, product id : ${ci.product} and qty : ${ci.qty}`)
+
+            });
+            console.log("cart.cartItems", cart.cartItems);
+        });
         test.todo("add 2 cart items to non empty cart with no overlapping products (Additional product not yet exist in the cart)")
         test.todo("Add 3 cart items to non empty cart with 2 overlapping products");
         test.todo("Reduce 2 cart items to non empty cart ");

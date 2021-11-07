@@ -182,7 +182,38 @@ describe("Unit test for Cart schema methods", () => {
 
             });
         });
-        test.todo("Reduce 2 cart items to non empty cart ");
+        test("Reduce 2 cart items from non empty cart ", async () => {
+            // Will reduce cartItems from cart with index 1 and 3 by 1 and 3
+            const cartItems = [
+                {
+                    product: cart.cartItems[1].product.toString(),
+                    qty: -1,
+                }, {
+                    product: cart.cartItems[3].product.toString(),
+                    qty: -3,
+                }
+            ];
+
+            // Clone the current cart.cartItems to create the expected cart.cartItems (after reduced)
+            let expectedCartItems: CartItem[] = cart.cartItems.map(ci => {
+                return (({ product, qty }) => ({ product, qty }))(ci);
+            });
+            //  Change the expected `qty`
+            expectedCartItems[1].qty += cartItems[0].qty;
+            expectedCartItems[3].qty += cartItems[1].qty;
+
+            // Modify the cart.cartItems
+            cart.modifyCartItems(cartItems);
+
+            // Assert the number of cart.cartItems is still the same
+            expect(cart.cartItems.length).toBe(expectedCartItems.length);
+            // Assert each cart.cartItems match the expected cart items
+            for (let i = 0; i < cart.cartItems.length; i++) {
+                const ci = cart.cartItems[i];
+                expect(ci.product.toString()).toBe(expectedCartItems[i].product.toString());
+                expect(ci.qty).toBe(expectedCartItems[i].qty);
+            }
+        });
         test.todo("Reduce 2 cart items until 0 (no longer exist in cart");
     });
 });

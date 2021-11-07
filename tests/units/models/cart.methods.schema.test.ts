@@ -6,7 +6,9 @@ import ProductModel from "../../../src/models/product.model";
 import { Product, ProductDocument } from "../../../src/types/common";
 import { CartDocument, Cart, CartItem } from "../../../src/types/shop";
 import * as productsTestlib from "../../testlibs/products.testlib";
-import { Certificate } from "crypto";
+
+// Increase timeout
+jest.setTimeout(12000);
 
 describe("Unit test for Cart schema methods", () => {
     // Products in DB to be used between test cases
@@ -118,7 +120,68 @@ describe("Unit test for Cart schema methods", () => {
                 if (!isFound) throw new Error(`Product not found or not match. product id: ${ci.product} `);
             });
         });
-        test.todo("Add 3 cart items to non empty cart with 2 overlapping products");
+        test("Add 3 cart items to non empty cart with 2 overlapping products", async () => {
+            // Copy the current     `cart.cartItems` to be matched with the result later
+            const prevCartItems = cart.cartItems.map((ci) => {
+                // Clone the cart item on specific attributes
+                return (({ product, qty }) => ({ product, qty }))(ci)
+            });
+
+            // Init the cartItems with 2 overlapping products & 1 non existing product
+            const cartItems: CartItem[] = [
+                // Existing product in cart
+                {
+                    product: productsInDb[2]._id.toString(),
+                    qty: 4,
+                }, {
+                    product: productsInDb[4]._id.toString(),
+                    qty: 4,
+                },
+                // Product not exist in cart
+                {
+                    product: productsInDb[5]._id.toString(),
+                    qty: 4,
+                }
+            ];
+
+            // Put the cartItems to cart
+            cart.modifyCartItems(cartItems);
+
+            // Assert cart.cartItems.length is 5+1
+            expect(cart.cartItems.length).toBe(6);
+            // Assert each of the added cartItems exist in cart 
+            cartItems.forEach((ci) => {
+                // Is the cart item found in cart ?
+                const isFound = cart.cartItems.find((ci2) => {
+                    return ci.product === ci2.product.toString();
+                });
+
+                // If not found, throw exception
+                if (!isFound) throw new Error("Carst item / product is not found in cart");
+            });
+            // Iterate through each of cart.cartItems. The `qty` should be correct.
+            cart.cartItems.forEach((ci) => {
+                // `qty` to be compare with the `qty` in the current cart.
+                let qty = 0;
+
+                // We are going to iterate through the previous cart.CartItems and the added cartItems
+                // Everytime found the matching product, the `qty` will be accumulated and the final `qty` should be the result of the current `qty` in cart.cartItem`.
+                [prevCartItems, cartItems].forEach((list) => {
+                    list.find((ci2) => {
+                        // Is the product found ?
+                        if (ci.product.toString() === ci2.product.toString()) {
+                            qty += ci2.qty;
+                            return true;
+                        }
+                        return false;
+                    });
+                });
+
+                // Assert the `qty` of the current cart
+                expect(ci.qty).toBe(qty);
+
+            });
+        });
         test.todo("Reduce 2 cart items to non empty cart ");
         test.todo("Reduce 2 cart items until 0 (no longer exist in cart");
     });

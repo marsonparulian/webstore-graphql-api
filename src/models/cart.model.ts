@@ -21,19 +21,24 @@ const cartSchema = new Schema({
 
 // Methods
 cartSchema.methods.modifyCartItems = function modifyCartItems(cartItems: CartItem[]): void {
+    // Clone the current `cart.cartItems` as temporary result.
+    let tempCartItems: CartItem[] = this.cartItems.map((ci: CartItem) => {
+        return (({ product, qty }) => ({ product, qty }))(ci);
+    });
+
     // Iterate through `cartItems`
     cartItems.forEach(ci => {
         // Flag to indicate whether cart item / product is found in cart
         let isFound = false;
 
-        // Iterate through the cart.cartItems
-        for (let i = 0; i < this.cartItems.length; i++) {
+        // Iterate through the temporary cart items
+        for (let i = 0; i < tempCartItems.length; i++) {
             // Is the product found in cart ?
-            if (ci.product.toString() === this.cartItems[i].product.toString()) {
+            if (ci.product.toString() === tempCartItems[i].product.toString()) {
                 isFound = true;
 
                 // Accumulate the `qty`
-                this.cartItems[i].qty += ci.qty;
+                tempCartItems[i].qty += ci.qty;
 
                 break;
             }
@@ -42,9 +47,12 @@ cartSchema.methods.modifyCartItems = function modifyCartItems(cartItems: CartIte
         // If the cart item / product not found in cart
         if (!isFound) {
             // Append `carItem`
-            this.cartItems.push(ci);
+            tempCartItems.push(ci);
         }
     });
+
+    // Assign all non empty cart items to `this.cartItems`
+    this.cartItems = tempCartItems.filter((ci) => ci.qty > 0);
 
 };
 

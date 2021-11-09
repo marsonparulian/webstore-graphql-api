@@ -214,6 +214,39 @@ describe("Unit test for Cart schema methods", () => {
                 expect(ci.qty).toBe(expectedCartItems[i].qty);
             }
         });
-        test.todo("Reduce 2 cart items until 0 (no longer exist in cart");
+        test("Reduce 2 cart items until 0 (no longer exist in cart", async () => {
+            // Verify cart.cartItems has 6 elements
+            expect(cart.cartItems.length).toBe(6);
+
+            // Create cartItems that will remove `cart.cartItems` with index 1 and 5
+            const indexToRemove = [1, 5];
+            let cartItems: CartItem[] = [];
+            indexToRemove.forEach((i) => {
+                cartItems.push({
+                    product: cart.cartItems[i].product.toString(),
+                    qty: -999,
+                });
+            });
+
+            // Create expected cart items by filter the `indexToRemove`.
+            const expectedCartItems: CartItem[] = cart.cartItems.filter((ci, i) => {
+                if (indexToRemove.includes(i)) {
+                    return false;
+                }
+                return true;
+            });
+
+            // Modify the cart items
+            cart.modifyCartItems(cartItems);
+
+            // Assert the number of `cart.cartItems` elements has been reduced by 2.
+            expect(cart.cartItems.length).toBe(4);
+            // Assert the current `cart.cartItems` match the expected result.
+            cart.cartItems.forEach((ci, i) => {
+                // Assert each element
+                expect(ci.product.toString()).toBe(expectedCartItems[i].product.toString());
+                expect(ci.qty).toBe(expectedCartItems[i].qty);
+            });
+        });
     });
 });

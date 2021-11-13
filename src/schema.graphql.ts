@@ -47,5 +47,6 @@ type Query {
 type Mutation {
     register(registerInput: RegisterInput): User 
     login(loginInput : LoginInput) :UserSession
+    modifyCart:Cart
 }
 `;

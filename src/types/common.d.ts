@@ -28,4 +28,6 @@ export interface IProductParams {
 export interface IContext {
     // Only used in resolvers
     dataSources: any;
+    // Id of the logged in user.Empty string if not logged in
+    userId: string;
 }

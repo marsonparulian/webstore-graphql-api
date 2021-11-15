@@ -11,6 +11,7 @@ import * as usersTestLib from "./users.testlib";
 const LOGIN_OPERATION = gql`
 mutation userLogin($loginInput : LoginInput){
     login(loginInput: $loginInput) {
+        _id
         name
         email
         token

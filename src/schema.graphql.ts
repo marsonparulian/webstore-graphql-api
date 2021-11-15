@@ -25,7 +25,7 @@ input LoginInput {
     password: String
 }
 type UserSession {
-    id: ID
+    _id: ID
     name: String!
     email: String!
     token: String!

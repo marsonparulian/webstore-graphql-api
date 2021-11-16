@@ -6,6 +6,8 @@ import ProductModel from "./models/product.model";
 import Product from "./data-sources/products";
 import UserModel from "./models/user.model";
 import Users from "./data-sources/users";
+import CartModel from "./models/cart.model";
+import Carts from "./data-sources/carts";
 import { parseUserIdFromToken } from "./services/auth.service";
 import "dotenv/config";
 
@@ -15,7 +17,6 @@ const server = new ApolloServer({
     resolvers,
     context: ({ req }) => {
         const token = req?.headers?.authorization || "";
-        console.log("token in context function : ", token);
         const userId = parseUserIdFromToken(token);
         return {
             userId,
@@ -24,6 +25,7 @@ const server = new ApolloServer({
     dataSources: () => ({
         products: new Product(ProductModel),
         users: new Users(UserModel),
+        carts: new Carts(CartModel),
     }),
     plugins: [
         ApolloServerPluginLandingPageGraphQLPlayground,

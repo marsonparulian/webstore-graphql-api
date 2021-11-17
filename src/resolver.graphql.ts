@@ -16,9 +16,12 @@ const resolver = {
         login: async (_: never, { loginInput }: { loginInput: LoginInput }, context: IContext) => {
             return context.dataSources.users.login(loginInput)
         },
-        modifyCart: async (_: never, __: never, context: IContext) => {
+        modifyCart: async (_: never, args: any, context: IContext) => {
+
             // Throw error if logged in user id is not provided in context
             if (!context.userId) throw new Error(texts.UNAUTHORIZED);
+
+            return context.dataSources.carts.modifyCart(context.userId, args.cartItemModifiers);
         }
     }
 };

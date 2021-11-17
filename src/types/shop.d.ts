@@ -13,5 +13,5 @@ export interface Cart {
     cartItems: CartItem[];
 }
 export type CartDocument = Cart & Document & {
-    modifyCartItems: (cartItems: CartItem[]) => void
+    modifyCartItems: (cartItems: CartItem[]) => CartDocument
 };

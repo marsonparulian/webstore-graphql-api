@@ -31,12 +31,17 @@ type UserSession {
     token: String!
 }
 type CartItem {
+    _id: ID
     product: Product
     qty: Int
 }
+input CartItemModifier {
+    product : ID
+    qty: Int
+}
 type Cart {
-    id: ID
-    userId: ID
+    _id: ID
+    user: User
     cartItems: [CartItem]
 }
 
@@ -47,6 +52,6 @@ type Query {
 type Mutation {
     register(registerInput: RegisterInput): User 
     login(loginInput : LoginInput) :UserSession
-    modifyCart:Cart
+    modifyCart (cartItemModifiers : [CartItemModifier]):Cart
 }
 `;

@@ -20,7 +20,7 @@ const cartSchema = new Schema({
 });
 
 // Methods
-cartSchema.methods.modifyCartItems = function modifyCartItems(cartItems: CartItem[]): void {
+cartSchema.methods.modifyCartItems = function modifyCartItems(cartItems: CartItem[]): CartDocument {
     // Clone the current `cart.cartItems` as temporary result.
     let tempCartItems: CartItem[] = this.cartItems.map((ci: CartItem) => {
         return (({ product, qty }) => ({ product, qty }))(ci);
@@ -53,6 +53,8 @@ cartSchema.methods.modifyCartItems = function modifyCartItems(cartItems: CartIte
 
     // Assign all non empty cart items to `this.cartItems`
     this.cartItems = tempCartItems.filter((ci) => ci.qty > 0);
+
+    return this;
 
 };
 

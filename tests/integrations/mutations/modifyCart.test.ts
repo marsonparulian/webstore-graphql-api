@@ -5,8 +5,9 @@ import server from "../../../src/server";
 import dbService from "../../../src/services/db.service";
 import ProductModel from "../../../src/models/product.model"
 import CartModel from "../../../src/models/cart.model";
-import { CartDocument, CartItem } from "../../../src/types/shop";
+import { CartDocument, CartItem, Cart } from "../../../src/types/shop";
 import { ProductDocument } from "../../../src/types/common";
+import { UserSession } from "../../../src/types/auth";
 import { sendLoginOperation } from "../../testlibs/common.testlib";
 import * as texts from "../../../src/statics/text.static";
 
@@ -39,6 +40,8 @@ describe("Integration test : modifyCart", () => {
     let userId: string;
     // Auth token to be used between tests
     let authToken: string = "";
+    // User session (acquired upon login) to be used between test
+    let userSession: UserSession;
     // Product documents in DB to be used between tests.
     let productsInDb: ProductDocument[] = [];
     beforeAll(async () => {
@@ -49,7 +52,7 @@ describe("Integration test : modifyCart", () => {
         productsInDb = await ProductModel.find().lean();
 
         // execute `login` operation to get auth token & userId
-        const userSession = await sendLoginOperation();
+        userSession = await sendLoginOperation();
         userId = userSession._id;
         authToken = userSession.token;
     });
@@ -181,7 +184,71 @@ describe("Integration test : modifyCart", () => {
             if (!isFound) throw ("Cart item from DB is not found in the response");
         });
     });
-    // test.todo("Add 1 item cart to empty cart");
+    test("Add 1 item cart to empty cart", async () => {
+        // Delete the user's cart in DB
+        await CartModel.deleteOne({ user: userId });
+
+        // Assert the cart is deleted
+        const initialCartInDb: null | CartDocument = await CartModel.findById(userId);
+        expect(initialCartInDb).toBeNull();
+
+        // Init `1 cart item to be added to the cart`
+        const cartItemInput: CartItem[] = [{
+            product: productsInDb[3]._id.toString(),
+            qty: 5,
+        }];
+
+        // Create context function parameter
+        const contextParam = mockHttp.createMocks({
+            headers: {
+                authorization: authToken,
+            }
+        });
+
+        // Execute `modifyCart` operation
+        const response = await server.executeOperation({
+            query: MODIFY_CART,
+            variables: {
+                cartItemModifiers: cartItemInput,
+            }
+        }, contextParam);
+
+        // Assert there is not errors in response
+        expect(response.errors).toBeFalsy();
+
+        // Assert the expected response
+        const responseCart: Cart = response.data.modifyCart as Cart;
+        expect(responseCart._id).toBeTruthy();
+        expect(responseCart.user).toEqual(expect.objectContaining({
+            _id: userSession._id,
+            name: userSession.name,
+            email: userSession.email,
+        }));
+        // Assert does the response cart has the cart item added
+        expect(responseCart.cartItems.length).toBe(1);
+        expect(responseCart.cartItems[0]).toEqual(expect.objectContaining({
+            qty: cartItemInput[0].qty,
+            product: expect.objectContaining({
+                _id: cartItemInput[0].product,
+                name: expect.any(String),
+            }),
+        }));
+
+        // Fetch the current cart directly from DB
+        const currentCartInDb: null | Cart = await CartModel.findOne({ user: userSession._id });
+        if (currentCartInDb === null) throw new Error("Current cart not found in DB (code: 351");
+
+        // Assert the cart in DB has the expected values
+        const userIdInResponseCart: string = typeof responseCart.user === "string" ? responseCart.user : responseCart.user._id;
+        expect(currentCartInDb._id.toString()).toBe(responseCart._id);
+        expect(currentCartInDb.user.toString()).toBe(userIdInResponseCart);
+        // Assert the added cart item is saved in DB
+        const cartItem0InResponseCart: CartItem = responseCart.cartItems[0];
+        const productId0InResponseCart: string = typeof cartItem0InResponseCart.product === "string" ? cartItem0InResponseCart.product : cartItem0InResponseCart.product._id;
+        expect(currentCartInDb.cartItems.length).toBe(responseCart.cartItems.length);
+        expect(currentCartInDb.cartItems[0].product.toString()).toBe(productId0InResponseCart);
+        expect(currentCartInDb.cartItems[0].qty).toBe(cartItem0InResponseCart.qty);
+    });
     // test.todo("Add 3 cart items to empty cart ");
     // test.todo("Add 2 cart items to non empty cart");
     // test.todo("Add 2 existing cart items & 1 non existing cart item");

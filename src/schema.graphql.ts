@@ -2,7 +2,7 @@ import { gql } from "apollo-server";
 
 export default gql`
 type Product {
-    id: ID
+    _id: ID
     name: String
     description: String
 }
@@ -11,7 +11,7 @@ type PaginatedProducts{
     products: [Product]
 }
 type User {
-    id: ID
+    _id: ID
     name: String
     email: String
 }
@@ -32,11 +32,11 @@ type UserSession {
 }
 type CartItem {
     _id: ID
-    product: Product
-    qty: Int
+product: Product
+qty: Int
 }
 input CartItemModifier {
-    product : ID
+    product: ID
     qty: Int
 }
 type Cart {
@@ -46,12 +46,12 @@ type Cart {
 }
 
 type Query {
-    paginatedProducts (keyword:String, offset:Int, limit: Int): PaginatedProducts
+    paginatedProducts(keyword: String, offset: Int, limit: Int): PaginatedProducts
     cart: Cart
 }
 type Mutation {
-    register(registerInput: RegisterInput): User 
-    login(loginInput : LoginInput) :UserSession
-    modifyCart (cartItemModifiers : [CartItemModifier]):Cart
+    register(registerInput: RegisterInput): User
+    login(loginInput: LoginInput): UserSession
+    modifyCart(cartItemModifiers: [CartItemModifier]): Cart
 }
 `;

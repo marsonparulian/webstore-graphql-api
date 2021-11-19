@@ -18,14 +18,14 @@ mutation modifyCart($cartItemModifiers :[CartItemModifier]) {
     modifyCart(cartItemModifiers: $cartItemModifiers){
         _id
         user{
-            id
+            _id
             name
             email
         }
         cartItems{
             _id
             product{
-                id
+                _id
                 name
                 description
             }
@@ -150,7 +150,7 @@ describe("Integration test : modifyCart", () => {
             // Is found in the response ?
             const isFound = responseCart.cartItems.find((ci2: any) => {
                 return ci.qty === ci2.qty
-                    && ci.product.toString() === ci2.product.id;
+                    && ci.product.toString() === ci2.product._id;
             });
             // If not found, throw error
             if (!isFound) throw new Error("Can not found the added cartItemModifiers in the respopnse (cart.cartItems)");
@@ -167,14 +167,14 @@ describe("Integration test : modifyCart", () => {
 
         // Assert the cart (fetched by GraphQL) match the cart directly fetch from DB
         expect(responseCart._id).toBe(currentCartInDb._id.toString());
-        expect(responseCart.user.id).toBe(currentCartInDb.user.toString());
+        expect(responseCart.user._id).toBe(currentCartInDb.user.toString());
         // Assert the cart items from response matched cart item saved in DB
         currentCartInDb.cartItems.forEach((ci: any) => {
             // Check if current item exist in response
             const isFound = responseCart.cartItems.find((ci2: any) => {
                 return ci.qty === ci2.qty
                     && ci.product.toString()
-                    === ci2.product.id;
+                    === ci2.product._id;
             });
 
             // If not found, throw exception

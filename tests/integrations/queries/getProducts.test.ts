@@ -16,7 +16,7 @@ query getProducts($keyword: String, $offset: Int=0, $limit: Int= 12){
         ){
         totalProducts
         products{
-            id
+            _id
             name
             description
         }

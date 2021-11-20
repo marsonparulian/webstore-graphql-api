@@ -337,11 +337,12 @@ describe("Integration test : modifyCart", () => {
             if (!isFound) throw new Error("The cart item is not found in DB (code : 285)");
         });
     });
-    // test.todo("Add 2 cart items to non empty cart");
-    // test.todo("Add 2 existing cart items & 1 non existing cart item");
-    // test.todo("Reduce 2 cart items (the final qty > 0)");
-    // test.todo("Remove 2 cart items from cart");
-    // test.todo("Remove cart items from non existing cart");
+    // Note : tests below are not mandatory, because they have been partially tested in `CartModel.methods.modifyCart`.
+    test.todo("Add 2 cart items to non empty cart");
+    test.todo("Add 2 existing cart items & 1 non existing cart item");
+    test.todo("Reduce 2 cart items (the final qty > 0)");
+    test.todo("Remove 2 cart items from cart");
+    test.todo("Remove cart items from non existing cart");
     afterAll(async () => {
         // Disconnect DB
         await dbService.disconnect();

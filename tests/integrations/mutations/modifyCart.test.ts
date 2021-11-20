@@ -249,7 +249,94 @@ describe("Integration test : modifyCart", () => {
         expect(currentCartInDb.cartItems[0].product.toString()).toBe(productId0InResponseCart);
         expect(currentCartInDb.cartItems[0].qty).toBe(cartItem0InResponseCart.qty);
     });
-    // test.todo("Add 3 cart items to empty cart ");
+    test("Add 3 cart items to empty cart ", async () => {
+        // Delete all the user's carts
+        await CartModel.deleteMany({ user: userSession._id });
+
+        // Save an empty cart for the user
+        const emptyCart: CartDocument = new CartModel({
+            user: userSession._id,
+        });
+        await emptyCart.save();
+
+        // Assert the user already has an empty cart saved in DB
+        const savedEmptyCart: null | CartDocument = await CartModel.findOne({ user: userSession._id });
+        if (savedEmptyCart === null) throw new Error("Could find the saved empty cart (code 325");
+        // Assert the ampty cart's `cartItem` is an empty array.
+        expect(savedEmptyCart.cartItems).toEqual(expect.any(Array));
+        expect(savedEmptyCart.cartItems.length).toBe(0);
+
+        // Init 3 cart items to be send via GraphQL operation
+        const cartItemInputs: CartItem[] = [{
+            product: productsInDb[4]._id.toString(),
+            qty: 10,
+        }, {
+            product: productsInDb[5]._id.toString(),
+            qty: 11,
+        }, {
+            product: productsInDb[6]._id.toString(),
+            qty: 12,
+        }];
+
+        // Include autthToken in context function param
+        const contextParam = mockHttp.createMocks({
+            headers: {
+                authorization: authToken,
+            }
+        });
+
+        // Execute operation
+        const response = await server.executeOperation({
+            query: MODIFY_CART,
+            variables: {
+                cartItemModifiers: cartItemInputs,
+            }
+        }, contextParam);
+
+        // Assert the response contains no errors
+        expect(response.errors).toBeFalsy();
+
+        // Assert the cart from response
+        const responseCart: Cart = response.data.modifyCart as Cart;
+        // Response should have truthy `_id`
+        expect(responseCart._id).toBeTruthy();
+        // Response should have the right user
+        expect(responseCart.user).toEqual(expect.objectContaining({
+            _id: userSession._id,
+            name: userSession.name,
+            email: userSession.email,
+        }));
+        // Response should have the matching cart items
+        cartItemInputs.forEach((ci: CartItem) => {
+            expect(responseCart.cartItems).toEqual(expect.arrayContaining([
+                {
+                    _id: expect.any(String),
+                    qty: ci.qty,
+                    product: expect.objectContaining({
+                        _id: ci.product,
+                    }),
+                }
+            ]));
+        });
+
+        // Fetch cart in DB
+        const cartInDb: null | Cart = await CartModel.findOne({ user: userSession._id });
+        if (cartInDb === null) throw new Error("Could not find the cart in DB (code : 482)");
+
+        // Cart the DB should have the right `_id`
+        expect(cartInDb._id.toString()).toBe(responseCart._id);
+        // Cart in DB should have the exact cart item
+        cartItemInputs.forEach((ci) => {
+            // Is the car titem found in `cartInDb`
+            const isFound = cartInDb.cartItems.find((ci2: CartItem) => {
+                return ci.qty === ci2.qty
+                    && ci.product === ci2.product.toString();
+            });
+
+            // Throw error if the product item not found in DB
+            if (!isFound) throw new Error("The cart item is not found in DB (code : 285)");
+        });
+    });
     // test.todo("Add 2 cart items to non empty cart");
     // test.todo("Add 2 existing cart items & 1 non existing cart item");
     // test.todo("Reduce 2 cart items (the final qty > 0)");
